@@ -1,0 +1,24 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: customer-product
+  datasource:
+    url: jdbc:postgresql://localhost:5432/customer-product
+    username: 'co-scraper'
+    password: 'password'
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  rabbitmq:
+    username: 'coscraper'
+    password: 'password'
+    product_queue: 'productQueue'
+    customer_queue: 'customerQueue'
