@@ -9,6 +9,6 @@ RUN mvn package
 # Stage 2: Create the final Docker image
 FROM openjdk:17-slim
 WORKDIR /app
-COPY --from=build /app/target/product-service-1.0-SNAPSHOT.jar product-service.jar
+COPY --from=build /app/target/customer-product-service-1.0-SNAPSHOT.jar customer-product-service.jar
 EXPOSE 8080
-CMD ["java", "-jar", "product-service.jar"]
+CMD ["java", "-jar", "customer-product-service.jar"]
