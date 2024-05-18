@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer-product-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customer-product-service
+  template:
+    metadata:
+      labels:
+        app: customer-product-service
+    spec:
+      containers:
+        - name: customer-product-service
+          image: customer-product-service:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql:5432/customer_product
+            - name: SPRING_DATASOURCE_USERNAME
+              value: co-scraper
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: password
+            - name: SPRING_RABBITMQ_USERNAME
+              value: coscraper
+            - name: SPRING_RABBITMQ_PASSWORD
+              value: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customer-product-service
+spec:
+  ports:
+    - port: 8082
+      targetPort: 8082
+  selector:
+    app: customer-product-service
