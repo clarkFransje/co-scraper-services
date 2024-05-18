@@ -1,7 +1,7 @@
-package com.coscrapercode.customer_product.listeners;
+package com.coscraper.customer_product.listeners;
 
-import com.coscrapercode.customer_product.models.CustomerDeleteMessage;
-import com.coscrapercode.customer_product.services.CustomerProductService;
+import com.coscraper.customer_product.models.CustomerDeleteMessage;
+import com.coscraper.customer_product.services.CustomerProductService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.coscrapercode.customer_product.config;
+package com.coscraper.customer_product.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.Queue;

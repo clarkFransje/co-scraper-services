@@ -1,4 +1,4 @@
-package com.coscrapercode.customer_product;
+package com.coscraper.customer_product;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,8 +1,8 @@
-package com.coscrapercode.customer_product.controllers;
+package com.coscraper.customer_product.controllers;
 
-import com.coscrapercode.customer_product.models.CustomerProductAddRequest;
-import com.coscrapercode.customer_product.models.CustomerProductDeleteRequest;
-import com.coscrapercode.customer_product.services.CustomerProductService;
+import com.coscraper.customer_product.models.CustomerProductAddRequest;
+import com.coscraper.customer_product.models.CustomerProductDeleteRequest;
+import com.coscraper.customer_product.services.CustomerProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 

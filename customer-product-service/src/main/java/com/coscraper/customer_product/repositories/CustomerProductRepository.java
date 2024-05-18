@@ -1,6 +1,6 @@
-package com.coscrapercode.customer_product.repositories;
+package com.coscraper.customer_product.repositories;
 
-import com.coscrapercode.customer_product.models.CustomerProduct;
+import com.coscraper.customer_product.models.CustomerProduct;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

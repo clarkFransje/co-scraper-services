@@ -1,4 +1,4 @@
-package com.coscrapercode.customer_product.models;
+package com.coscraper.customer_product.models;
 
 public record ProductDeleteMessage (int productId) {
 }
