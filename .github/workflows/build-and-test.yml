@@ -24,39 +24,12 @@ jobs:
           cd customer-service
           mvn clean install
 
-      - name: Upload customer-service test results and dump files
-        uses: actions/upload-artifact@v2
-        with:
-          name: customer-test-results
-          path: |
-            customer-service/target/surefire-reports
-            customer-service/target/*.dump
-            customer-service/target/*.dumpstream
-
       - name: Build and test product-service
         run: |
           cd ../product-service
           mvn clean install
 
-      - name: Upload product-service test results and dump files
-        uses: actions/upload-artifact@v2
-        with:
-          name: product-test-results
-          path: |
-            product-service/target/surefire-reports
-            product-service/target/*.dump
-            product-service/target/*.dumpstream
-
       - name: Build and test customer-product-service
         run: |
           cd ../customer-product-service
           mvn clean install
-
-      - name: Upload customer-product-service test results and dump files
-        uses: actions/upload-artifact@v2
-        with:
-          name: customer-product-test-results
-          path: |
-            customer-product-service/target/surefire-reports
-            customer-product-service/target/*.dump
-            customer-product-service/target/*.dumpstream
