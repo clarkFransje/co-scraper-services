@@ -26,10 +26,10 @@ jobs:
 
       - name: Build and test product-service
         run: |
-          cd ../product-service
+          cd product-service   # Adjust the directory path as needed
           mvn clean install
 
       - name: Build and test customer-product-service
         run: |
-          cd ../customer-product-service
+          cd customer-product-service
           mvn clean install
