@@ -1,0 +1,38 @@
+name: Deploy to Kubernetes
+
+on:
+  workflow_run:
+    workflows: ["Docker Build And Push"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get AKS credentials
+        run: az aks get-credentials --resource-group co-scraper --name co-scraper-cluster
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: 'latest'
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f co-scraper/k8s-configs/customer-service-deployment.yaml --validate=false
+          kubectl apply -f co-scraper/k8s-configs/product-service-deployment.yaml --validate=false
+          kubectl apply -f co-scraper/k8s-configs/customer-product-service-deployment.yaml --validate=false
+          kubectl apply -f co-scraper/k8s-configs/ingress.yaml --validate=false
+          kubectl apply -f co-scraper/k8s-configs/postgresql-deployment.yaml --validate=false
+          kubectl apply -f co-scraper/k8s-configs/rabbitmq-deployment.yaml --validate=false
