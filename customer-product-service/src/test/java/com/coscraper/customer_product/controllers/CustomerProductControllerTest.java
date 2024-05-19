@@ -2,10 +2,12 @@ package com.coscraper.customer_product.controllers;
 
 import com.coscraper.customer_product.models.CustomerProductAddRequest;
 import com.coscraper.customer_product.models.CustomerProductDeleteRequest;
+import com.coscraper.customer_product.services.CustomerProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,6 +22,9 @@ public class CustomerProductControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private CustomerProductService customerProductService; // Mocked service
 
     @Test
     public void testAddProductToCustomer() throws Exception {
