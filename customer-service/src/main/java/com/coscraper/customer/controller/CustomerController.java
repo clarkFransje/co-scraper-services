@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("api/v1/customers")
+@RequestMapping("api/v1")
 public record CustomerController(CustomerService customerService) {
 
     @PostMapping
