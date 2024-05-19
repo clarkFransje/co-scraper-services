@@ -15,7 +15,6 @@ spec:
       containers:
         - name: customer-service
           image: coscraper.azurecr.io/customer-service:latest
-          imagePullPolicy: Never
           ports:
             - containerPort: 8080
           env:
