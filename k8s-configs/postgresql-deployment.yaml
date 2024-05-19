@@ -36,7 +36,7 @@ spec:
             - name: postgres-data
               mountPath: /var/lib/postgresql/data
             - name: init-db
-              mountPath: /docker-entrypoint-initdb.d
+              mountPath: /docker-entrypoint-initdb.dz
       volumes:
         - name: postgres-data
           emptyDir: {}
