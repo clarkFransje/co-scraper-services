@@ -12,11 +12,17 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Build Docker images
         run: |
-          docker build -t customer-service:latest -f customer-service/Dockerfile .
-          docker build -t product-service:latest -f product-service/Dockerfile .
-          docker build -t customer-product-service:latest -f customer-product-service/Dockerfile .
+          cd customer-service
+          docker build -t customer-service:latest -f Dockerfile .
+          cd ../product-service
+          docker build -t product-service:latest -f Dockerfile .
+          cd ../customer-product-service
+          docker build -t customer-product-service:latest -f Dockerfile .
 
       - name: Log in to Azure Container Registry
         uses: azure/login@v1
