@@ -30,9 +30,9 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f co-scraper/k8s-configs/customer-service-deployment.yaml --validate=false
-          kubectl apply -f co-scraper/k8s-configs/product-service-deployment.yaml --validate=false
-          kubectl apply -f co-scraper/k8s-configs/customer-product-service-deployment.yaml --validate=false
-          kubectl apply -f co-scraper/k8s-configs/ingress.yaml --validate=false
-          kubectl apply -f co-scraper/k8s-configs/postgresql-deployment.yaml --validate=false
-          kubectl apply -f co-scraper/k8s-configs/rabbitmq-deployment.yaml --validate=false
+          kubectl apply -f k8s-configs/customer-service-deployment.yaml --validate=false
+          kubectl apply -f k8s-configs/product-service-deployment.yaml --validate=false
+          kubectl apply -f k8s-configs/customer-product-service-deployment.yaml --validate=false
+          kubectl apply -f k8s-configs/ingress.yaml --validate=false
+          kubectl apply -f k8s-configs/postgresql-deployment.yaml --validate=false
+          kubectl apply -f k8s-configs/rabbitmq-deployment.yaml --validate=false
