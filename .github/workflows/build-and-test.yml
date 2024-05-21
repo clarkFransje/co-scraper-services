@@ -19,17 +19,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Build and test customer-service
-        run: |
-          cd customer-service
-          mvn clean install
+      - name: Cache Maven dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
-      - name: Build and test product-service
+      - name: Build and test
         run: |
-          cd product-service   # Adjust the directory path as needed
-          mvn clean install
+          mvn clean install -DskipTests --batch-mode
 
-      - name: Build and test customer-product-service
+      - name: Run tests in parallel
         run: |
-          cd customer-product-service
-          mvn clean install
+          mvn test --batch-mode
