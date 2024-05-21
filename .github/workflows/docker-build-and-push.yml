@@ -10,40 +10,39 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    concurrency: build-and-push
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build Docker images
-        run: |
-          COMMIT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
-          
-          cd customer-service
-          docker build -t customer-service:$COMMIT_SHA -f Dockerfile .
-          cd ../product-service
-          docker build -t product-service:$COMMIT_SHA -f Dockerfile .
-          cd ../customer-product-service
-          docker build -t customer-product-service:$COMMIT_SHA -f Dockerfile .
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       - name: Log in to Azure Container Registry
-        uses: azure/login@v1
+        uses: azure/docker-login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          login-server: ${{ secrets.AZURE_REGISTRY }}.azurecr.io
+          username: ${{ secrets.AZURE_REGISTRY_USERNAME }}
+          password: ${{ secrets.AZURE_REGISTRY_PASSWORD }}
 
-      - name: Tag and push Docker images to Azure Container Registry
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build and push Docker images
         run: |
-          COMMIT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
-          az acr login --name ${{ secrets.AZURE_REGISTRY }}
+          TAG=${GITHUB_SHA::7}
           
-          docker tag customer-service:$COMMIT_SHA ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-service:$COMMIT_SHA
-          docker tag product-service:$COMMIT_SHA ${{ secrets.AZURE_REGISTRY }}.azurecr.io/product-service:$COMMIT_SHA
-          docker tag customer-product-service:$COMMIT_SHA ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-product-service:$COMMIT_SHA
+          docker buildx create --use
           
-          docker push ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-service:$COMMIT_SHA
-          docker push ${{ secrets.AZURE_REGISTRY }}.azurecr.io/product-service:$COMMIT_SHA
-          docker push ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-product-service:$COMMIT_SHA
-
-      - name: Set output tag
-        id: vars
-        run: echo "::set-output name=tag::$COMMIT_SHA"
+          cd customer-service
+          docker buildx build --cache-to=type=local,dest=/tmp/.buildx-cache --cache-from=type=local,src=/tmp/.buildx-cache -t ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-service:$TAG -f Dockerfile . --push
+          cd ../product-service
+          docker buildx build --cache-to=type=local,dest=/tmp/.buildx-cache --cache-from=type=local,src=/tmp/.buildx-cache -t ${{ secrets.AZURE_REGISTRY }}.azurecr.io/product-service:$TAG -f Dockerfile . --push
+          cd ../customer-product-service
+          docker buildx build --cache-to=type=local,dest=/tmp/.buildx-cache --cache-from=type=local,src=/tmp/.buildx-cache -t ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-product-service:$TAG -f Dockerfile . --push
