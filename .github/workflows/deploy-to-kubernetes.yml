@@ -28,6 +28,17 @@ jobs:
         with:
           version: 'latest'
 
+      - name: Set Image Tags
+        id: vars
+        run: echo "::set-output name=tag::$(echo $GITHUB_SHA | cut -c1-7)"
+
+      - name: Update Kubernetes Manifests
+        run: |
+          TAG=${{ steps.vars.outputs.tag }}
+          sed -i "s|image: coscraper.azurecr.io/customer-service:.*|image: coscraper.azurecr.io/customer-service:$TAG|" k8s-configs/customer-service-deployment.yaml
+          sed -i "s|image: coscraper.azurecr.io/product-service:.*|image: coscraper.azurecr.io/product-service:$TAG|" k8s-configs/product-service-deployment.yaml
+          sed -i "s|image: coscraper.azurecr.io/customer-product-service:.*|image: coscraper.azurecr.io/customer-product-service:$TAG|" k8s-configs/customer-product-service-deployment.yaml
+
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s-configs/customer-service-deployment.yaml
