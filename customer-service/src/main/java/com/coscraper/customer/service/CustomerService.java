@@ -16,6 +16,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class CustomerService {
     private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
@@ -70,5 +72,9 @@ public class CustomerService {
             // Handle JSON serialization error
             log.error(e.getMessage());
         }
+    }
+
+    public Optional<Customer> findCustomerById(Integer id) {
+        return customerRepository.findById(id);
     }
 }
