@@ -20,7 +20,9 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Log in to Azure Container Registry
-        run: az acr login --name ${{ secrets.AZURE_REGISTRY }}
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Cache Docker layers
         uses: actions/cache@v2
