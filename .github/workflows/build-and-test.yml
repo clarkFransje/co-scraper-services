@@ -19,18 +19,17 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Build and test
+      - name: Build and test customer-service
         run: |
-          mvn clean install -DskipTests --batch-mode
+          cd customer-service
+          mvn clean install
 
-      - name: Run tests in parallel
+      - name: Build and test product-service
         run: |
-          mvn test --batch-mode
+          cd product-service   # Adjust the directory path as needed
+          mvn clean install
+
+      - name: Build and test customer-product-service
+        run: |
+          cd customer-product-service
+          mvn clean install
