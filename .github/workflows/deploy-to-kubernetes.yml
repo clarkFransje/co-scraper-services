@@ -21,7 +21,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Get AKS credentials
-        run: az aks get-credentials --resource-group co-scraper --name co-scraper-cluster
+        run: az aks get-credentials --resource-group co-scraper --name co-scraper
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v1
@@ -30,9 +30,10 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f k8s-configs/customer-service-deployment.yaml --validate=false
-          kubectl apply -f k8s-configs/product-service-deployment.yaml --validate=false
-          kubectl apply -f k8s-configs/customer-product-service-deployment.yaml --validate=false
-          kubectl apply -f k8s-configs/ingress.yaml --validate=false
-          kubectl apply -f k8s-configs/postgresql-deployment.yaml --validate=false
-          kubectl apply -f k8s-configs/rabbitmq-deployment.yaml --validate=false
+          kubectl apply -f k8s-configs/customer-service-deployment.yaml
+          kubectl apply -f k8s-configs/product-service-deployment.yaml
+          kubectl apply -f k8s-configs/customer-product-service-deployment.yaml
+          kubectl apply -f k8s-configs/postgresql-deployment.yaml
+          kubectl apply -f k8s-configs/rabbitmq-deployment.yaml
+          kubectl apply -f k8s-configs/ingress.yaml
+          kubectl apply -f k8s-configs/ingress-controller.yaml
