@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: product-service
+  
 spec:
   replicas: 1
   selector:
@@ -28,12 +29,20 @@ spec:
               value: coscraper
             - name: SPRING_RABBITMQ_PASSWORD
               value: password
+            - name: SPRING_RABBITMQ_HOST
+              value: rabbitmq
+            - name: SPRING_RABBITMQ_PORT
+              value: "5672"
+      imagePullSecrets:
+        - name: acr-secret
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: product-service
+  
 spec:
+  type: ClusterIP
   ports:
     - port: 8080
       targetPort: 8080

@@ -118,6 +118,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: rabbitmq
+  
 spec:
   ports:
     - port: 5672
@@ -128,3 +129,26 @@ spec:
       targetPort: 15672
   selector:
     app: rabbitmq
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-rabbitmq-access
+  
+spec:
+  podSelector:
+    matchLabels:
+      app: rabbitmq
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: product-service
+        - podSelector:
+            matchLabels:
+              app: customer-service
+        - podSelector:
+            matchLabels:
+              app: customer-product-service

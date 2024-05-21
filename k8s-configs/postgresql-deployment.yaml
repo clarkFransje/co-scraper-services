@@ -12,6 +12,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgresql
+  
 spec:
   replicas: 1
   selector:
@@ -48,9 +49,33 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgresql
+  
 spec:
   ports:
     - port: 5432
       targetPort: 5432
   selector:
     app: postgresql
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgres-access
+  
+spec:
+  podSelector:
+    matchLabels:
+      app: postgresql
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: product-service
+        - podSelector:
+            matchLabels:
+              app: customer-service
+        - podSelector:
+            matchLabels:
+              app: customer-product-service

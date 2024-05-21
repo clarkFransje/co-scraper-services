@@ -16,7 +16,7 @@ spec:
         - name: customer-service
           image: coscraper.azurecr.io/customer-service:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 8081
           env:
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://postgresql:5432/customer
@@ -28,12 +28,20 @@ spec:
               value: coscraper
             - name: SPRING_RABBITMQ_PASSWORD
               value: password
+            - name: SPRING_RABBITMQ_HOST
+              value: rabbitmq
+            - name: SPRING_RABBITMQ_PORT
+              value: "5672"
+      imagePullSecrets:
+        - name: acr-secret
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: customer-service
+
 spec:
+  type: ClusterIP
   ports:
     - port: 8081
       targetPort: 8081
