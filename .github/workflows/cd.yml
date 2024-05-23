@@ -41,11 +41,20 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f k8s-configs/deployments/*.yaml
-          kubectl apply -f k8s-configs/config-maps/*.yaml
-          kubectl apply -f k8s-configs/network-policies/*.yaml
-          kubectl apply -f k8s-configs/services/*.yaml
+          for file in k8s-configs/deployments/*.yaml; do
+            kubectl apply -f "$file"
+          done
+          for file in k8s-configs/config-maps/*.yaml; do
+            kubectl apply -f "$file"
+          done
+          for file in k8s-configs/network-policies/*.yaml; do
+            kubectl apply -f "$file"
+          done
+          for file in k8s-configs/services/*.yaml; do
+            kubectl apply -f "$file"
+          done
           kubectl apply -f k8s-configs/hpa-services.yaml
           kubectl apply -f k8s-configs/ingress.yaml
           kubectl apply -f k8s-configs/ingress-controller.yaml
+
           
