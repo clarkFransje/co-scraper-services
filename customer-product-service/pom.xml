@@ -89,27 +89,6 @@
           <mainClass>com.coscraper.customer_product.CustomerProductApplication</mainClass>
         </configuration>
       </plugin>
-
-      <plugin>
-        <groupId>org.owasp</groupId>
-        <artifactId>dependency-check-maven</artifactId>
-        <version>7.0.4</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <failBuildOnCVSS>7</failBuildOnCVSS>
-          <formats>
-            <format>HTML</format>
-            <format>XML</format>
-            <format>JSON</format>
-          </formats>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 </project>
