@@ -1,0 +1,30 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_and_test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build customer-service
+        run: cd customer-service && mvn clean install
+
+      - name: Build product-service
+        run: cd product-service && mvn clean install
+
+      - name: Build customer-product-service
+        run: cd customer-product-service && mvn clean install

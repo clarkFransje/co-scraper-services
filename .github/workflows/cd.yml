@@ -1,15 +1,15 @@
-name: Deploy to Kubernetes
+name: CD Workflow
 
 on:
   workflow_run:
-    workflows: ["Docker Build And Push"]
+    workflows: ["CI Workflow"]
     types:
       - completed
 
 jobs:
-  deploy:
+  deploy_to_kubernetes:
+    name: Deploy to Kubernetes
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout code
