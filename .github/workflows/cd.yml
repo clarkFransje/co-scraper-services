@@ -30,7 +30,7 @@ jobs:
 
       - name: Set Image Tags
         id: vars
-        run: echo "::set-output name=tag::$(echo $GITHUB_SHA | cut -c1-7)"
+        run: echo "::set-output name=tag::${GITHUB_SHA}"
 
       - name: Update Kubernetes Manifests
         run: |
@@ -56,5 +56,3 @@ jobs:
           kubectl apply -f k8s-configs/hpa-services.yaml
           kubectl apply -f k8s-configs/ingress.yaml
           kubectl apply -f k8s-configs/ingress-controller.yaml
-
-          
