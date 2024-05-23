@@ -10,6 +10,13 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        service:
+          - customer-service
+          - product-service
+          - customer-product-service
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -20,11 +27,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Build customer-service
-        run: cd customer-service && mvn clean install
+      - name: Build and test ${{ matrix.service }}
+        run: |
+          cd ${{ matrix.service }}
+          mvn clean install
 
-      - name: Build product-service
-        run: cd product-service && mvn clean install
-
-      - name: Build customer-product-service
-        run: cd customer-product-service && mvn clean install
+      - name: Build Docker image and push to registry for ${{ matrix.service }}
+        run: |
+          cd ${{ matrix.service }}
+          docker build -t ${{ secrets.AZURE_REGISTRY }}.azurecr.io/${{ matrix.service }}:${{ github.sha }} .
+          docker login ${{ secrets.AZURE_REGISTRY }}.azurecr.io -u ${{ secrets.AZURE_REGISTRY_USERNAME }} -p ${{ secrets.AZURE_REGISTRY_PASSWORD }}
+          docker push ${{ secrets.AZURE_REGISTRY }}.azurecr.io/${{ matrix.service }}:${{ github.sha }}
