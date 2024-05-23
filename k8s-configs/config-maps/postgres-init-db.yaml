@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-db
+data:
+  init-databases.sql: |
+    CREATE DATABASE product;
+    CREATE DATABASE customer;
+    CREATE DATABASE customer_product;

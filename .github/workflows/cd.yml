@@ -41,10 +41,4 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f k8s-configs/customer-service-deployment.yaml
-          kubectl apply -f k8s-configs/product-service-deployment.yaml
-          kubectl apply -f k8s-configs/customer-product-service-deployment.yaml
-          kubectl apply -f k8s-configs/postgresql-deployment.yaml
-          kubectl apply -f k8s-configs/rabbitmq-deployment.yaml
-          kubectl apply -f k8s-configs/ingress.yaml
-          kubectl apply -f k8s-configs/ingress-controller.yaml
+          kubectl apply -f .

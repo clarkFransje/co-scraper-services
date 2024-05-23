@@ -1,25 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: customer-service
+  name: product-service
+  
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: customer-service
+      app: product-service
   template:
     metadata:
       labels:
-        app: customer-service
+        app: product-service
     spec:
       containers:
-        - name: customer-service
-          image: coscraper.azurecr.io/customer-service:latest
+        - name: product-service
+          image: coscraper.azurecr.io/product-service:latest
           ports:
-            - containerPort: 8081
+            - containerPort: 8080
           env:
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://postgresql:5432/customer
+              value: jdbc:postgresql://postgresql:5432/product
             - name: SPRING_DATASOURCE_USERNAME
               value: co-scraper
             - name: SPRING_DATASOURCE_PASSWORD
@@ -34,16 +35,3 @@ spec:
               value: "5672"
       imagePullSecrets:
         - name: acr-secret
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: customer-service
-
-spec:
-  type: ClusterIP
-  ports:
-    - port: 8081
-      targetPort: 8081
-  selector:
-    app: customer-service
