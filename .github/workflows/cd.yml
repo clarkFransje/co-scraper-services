@@ -35,9 +35,9 @@ jobs:
       - name: Update Kubernetes Manifests
         run: |
           TAG=${{ steps.vars.outputs.tag }}
-          sed -i "s|image: coscraper.azurecr.io/customer-service:.*|image: coscraper.azurecr.io/customer-service:$TAG|" k8s-configs/deployments/customer-service-deployment.yaml
-          sed -i "s|image: coscraper.azurecr.io/product-service:.*|image: coscraper.azurecr.io/product-service:$TAG|" k8s-configs/deployments/product-service-deployment.yaml
-          sed -i "s|image: coscraper.azurecr.io/customer-product-service:.*|image: coscraper.azurecr.io/customer-product-service:$TAG|" k8s-configs/deployments/customer-product-service-deployment.yaml
+          sed -i "s|image: coscraper.azurecr.io/customer-service:.*|image: coscraper.azurecr.io/customer-service:$TAG|" k8s-configs/deployments/customer-deployment.yaml
+          sed -i "s|image: coscraper.azurecr.io/product-service:.*|image: coscraper.azurecr.io/product-service:$TAG|" k8s-configs/deployments/product-deployment.yaml
+          sed -i "s|image: coscraper.azurecr.io/customer-product-service:.*|image: coscraper.azurecr.io/customer-product-service:$TAG|" k8s-configs/deployments/customer-product-deployment.yaml
 
       - name: Deploy to Kubernetes
         run: |
