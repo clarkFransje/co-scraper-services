@@ -41,4 +41,11 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f .
+          kubectl apply -f k8s-configs/deployments/*.yaml
+          kubectl apply -f k8s-configs/config-maps/*.yaml
+          kubectl apply -f k8s-configs/network-policies/*.yaml
+          kubectl apply -f k8s-configs/services/*.yaml
+          kubectl apply -f k8s-configs/hpa-services.yaml
+          kubectl apply -f k8s-configs/ingress.yaml
+          kubectl apply -f k8s-configs/ingress-controller.yaml
+          
