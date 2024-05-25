@@ -7,6 +7,8 @@ import com.coscraper.customer_product.repositories.CustomerProductRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public record CustomerProductService(CustomerProductRepository customerProductRepository) {
     public void addProductToCustomer(CustomerProductAddRequest request) {
@@ -22,7 +24,7 @@ public record CustomerProductService(CustomerProductRepository customerProductRe
         customerProductRepository.deleteById(customerProductDeleteRequest.customerProductId());
     }
 
-    public void deleteProductById(int productId) {
+    public void deleteProductById(UUID productId) {
         try {
             customerProductRepository.deleteByProductId(productId);
         } catch (DataIntegrityViolationException e) {
@@ -30,7 +32,7 @@ public record CustomerProductService(CustomerProductRepository customerProductRe
         }
     }
 
-    public void deleteCustomerById(int customerId) {
+    public void deleteCustomerById(UUID customerId) {
         try {
             customerProductRepository.deleteByCustomerId(customerId);
         } catch (DataIntegrityViolationException e) {

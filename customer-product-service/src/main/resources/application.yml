@@ -9,16 +9,12 @@ spring:
     username: 'co-scraper'
     password: 'password'
   jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
 
   rabbitmq:
     username: 'coscraper'
     password: 'password'
-    product_queue: 'productQueue'
-    customer_queue: 'customerQueue'
+    product_delete_queue: 'productDeleteQueue'
+    customer_delete_queue: 'customerQueue'

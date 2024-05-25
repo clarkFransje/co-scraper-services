@@ -1,4 +1,6 @@
 package com.coscraper.customer_product.models;
 
-public record CustomerProductDeleteRequest(Integer customerProductId) {
+import java.util.UUID;
+
+public record CustomerProductDeleteRequest(UUID customerProductId) {
 }

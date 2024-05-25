@@ -10,20 +10,20 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
-    @Value("${spring.rabbitmq.product_queue}")
-    private String productQueueName;
+    @Value("${spring.rabbitmq.product_delete_queue}")
+    private String productDeleteQueue;
 
-    @Value("${spring.rabbitmq.customer_queue}")
-    private String customerQueueName;
+    @Value("${spring.rabbitmq.customer_delete_queue}")
+    private String customerDeleteQueue;
 
     @Bean
     public Queue productQueue() {
-        return new Queue(productQueueName);
+        return new Queue(productDeleteQueue);
     }
 
     @Bean
     public Queue customerQueue() {
-        return new Queue(customerQueueName);
+        return new Queue(customerDeleteQueue);
     }
 
     @Bean

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -13,15 +15,8 @@ import lombok.NoArgsConstructor;
 @Entity
 public class CustomerProduct {
     @Id
-    @SequenceGenerator(
-            name = "customer_product_id_sequence",
-            sequenceName = "customer_product_id_sequence"
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "customer_product_id_sequence"
-    )
-    private Integer customerProductId;
-    private Integer customerId;
-    private Integer productId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID customerProductId;
+    private UUID customerId;
+    private UUID productId;
 }

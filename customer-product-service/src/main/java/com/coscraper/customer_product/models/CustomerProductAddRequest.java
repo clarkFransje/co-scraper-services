@@ -1,4 +1,6 @@
 package com.coscraper.customer_product.models;
 
-public record CustomerProductAddRequest (Integer customerId, Integer productId) {
+import java.util.UUID;
+
+public record CustomerProductAddRequest (UUID customerId, UUID productId) {
 }
