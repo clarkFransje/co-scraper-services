@@ -1,26 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: product-service
+  name: store-service
   namespace: co-scraper
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: product-service
+      app: store-service
   template:
     metadata:
       labels:
-        app: product-service
+        app: store-service
     spec:
       containers:
-        - name: product-service
-          image: coscraper.azurecr.io/product-service:latest
+        - name: store-service
+          image: coscraper.azurecr.io/store-service:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080
           env:
             - name: SPRING_DATASOURCE_URL
-              value: jdbc:postgresql://postgresql:5432/product
+              value: jdbc:postgresql://postgresql:5432/store
             - name: SPRING_DATASOURCE_USERNAME
               value: co-scraper
             - name: SPRING_DATASOURCE_PASSWORD

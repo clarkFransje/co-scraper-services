@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: co-scraper
   namespace: co-scraper
+  annotations:
+    kubernetes.io/ingress.class: nginx
 spec:
   rules:
     - http:
@@ -28,3 +30,10 @@ spec:
               name: customer-product-service
               port:
                 number: 8082
+        - path: /store
+          pathType: Prefix
+          backend:
+            service:
+              name: store-service
+              port:
+                number: 8083
