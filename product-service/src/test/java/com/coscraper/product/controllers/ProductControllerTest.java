@@ -1,8 +1,7 @@
 package com.coscraper.product.controllers;
 
 import com.coscraper.product.models.Product;
-import com.coscraper.product.models.ProductAddRequest;
-import com.coscraper.product.models.ProductUpdateRequest;
+import com.coscraper.product.models.ProductUpdateMessage;
 import com.coscraper.product.services.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -14,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -31,43 +31,19 @@ public class ProductControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    public void testAddProduct() throws Exception {
-        ProductAddRequest request = new ProductAddRequest("Product Name", "Product Description", 100.0);
-
-        mockMvc.perform(post("/api/v1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     public void testGetProduct() throws Exception {
-        Product product = new Product(1, "Product Name", "Product Description", 100.0);
-        Mockito.when(productService.getProductById(1)).thenReturn(Optional.of(product));
+        Product product = new Product(UUID.fromString("15b4a4de-51ce-4428-acaa-cb65a5083256"), UUID.fromString("154ebc21-8538-47ea-a408-efab8c26fc90"), "Product Name", "1234567890", "url", 100.00, 139.99, "imageUrl");
+        Mockito.when(productService.getProductById(UUID.fromString("15b4a4de-51ce-4428-acaa-cb65a5083256"))).thenReturn(Optional.of(product));
 
-        mockMvc.perform(get("/api/v1/1"))
+        mockMvc.perform(get("/api/v1/15b4a4de-51ce-4428-acaa-cb65a5083256"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value("15b4a4de-51ce-4428-acaa-cb65a5083256"))
+                .andExpect(jsonPath("$.storeId").value("154ebc21-8538-47ea-a408-efab8c26fc90"))
                 .andExpect(jsonPath("$.name").value("Product Name"))
-                .andExpect(jsonPath("$.description").value("Product Description"))
-                .andExpect(jsonPath("$.price").value(100.0));
-    }
-
-    @Test
-    public void testUpdateProduct() throws Exception {
-        Product product = new Product(1, "Product Name", "Product Description", 100.0);
-        ProductUpdateRequest request = new ProductUpdateRequest(1, 150.0);
-        Mockito.when(productService.getProductById(1)).thenReturn(Optional.of(product));
-
-        mockMvc.perform(put("/api/v1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testDeleteProduct() throws Exception {
-        mockMvc.perform(delete("/api/v1/1"))
-                .andExpect(status().isOk());
+                .andExpect(jsonPath("$.sku").value("1234567890"))
+                .andExpect(jsonPath("$.url").value("url"))
+                .andExpect(jsonPath("$.price").value(100.00))
+                .andExpect(jsonPath("$.oldPrice").value(139.99))
+                .andExpect(jsonPath("$.imageUrl").value("imageUrl"));
     }
 }

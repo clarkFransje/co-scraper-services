@@ -1,4 +1,6 @@
 package com.coscraper.product.models;
 
-public record ProductDeleteMessage (int productId) {
+import java.util.UUID;
+
+public record ProductDeleteMessage (UUID productId) {
 }

@@ -1,86 +1,65 @@
 package com.coscraper.product.services;
 
 
+import com.coscraper.product.messaging.MessageSender;
 import com.coscraper.product.models.Product;
-import com.coscraper.product.models.ProductAddRequest;
+import com.coscraper.product.models.ProductCreateMessage;
 import com.coscraper.product.models.ProductDeleteMessage;
-import com.coscraper.product.models.ProductUpdateRequest;
+import com.coscraper.product.models.ProductUpdateMessage;
 import com.coscraper.product.repositories.ProductRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageBuilder;
-import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ProductService {
     private static final Logger log = LoggerFactory.getLogger(ProductService.class);
-    private final RabbitTemplate rabbitTemplate;
-    private final String exchangeName;
     private final ProductRepository productRepository;
-    private final ObjectMapper objectMapper;
+    private final MessageSender messageSender;
 
-    public ProductService(RabbitTemplate rabbitTemplate, @Value("${spring.rabbitmq.exchange}") String exchangeName, ProductRepository productRepository, ObjectMapper objectMapper) {
-        this.rabbitTemplate = rabbitTemplate;
-        this.exchangeName = exchangeName;
+    public ProductService(ProductRepository productRepository, MessageSender messageSender) {
         this.productRepository = productRepository;
-        this.objectMapper = objectMapper;
+        this.messageSender = messageSender;
     }
 
-    public void createProduct(ProductAddRequest request) {
+    public void createProduct(ProductCreateMessage request) {
         Product product = Product.builder()
                 .name(request.name())
+                .storeId(request.storeId())
+                .sku(request.sku())
+                .url(request.url())
                 .price(request.price())
-                .description(request.description())
+                .oldPrice(request.oldPrice())
+                .imageUrl(request.imageUrl())
                 .build();
 
         productRepository.save(product);
-
-        log.info("Created product: {}", product);
+        log.info("Created product: {}, {}", product.getName(), product.getId());
     }
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
-    public Optional<Product> getProductById(int id) {
+    public Optional<Product> getProductById(UUID id) {
         return productRepository.findById(id);
     }
 
-    public void deleteProductById(int id) {
+    public void deleteProductById(UUID id) {
         productRepository.deleteById(id);
-        log.info("Deleted product: {}", id);
+        log.info("Deleted user: {}", id);
 
-        try {
-            // Convert product ID to JSON
-            ProductDeleteMessage message = new ProductDeleteMessage(id);
-            String jsonMessage = objectMapper.writeValueAsString(message);
-
-            MessageProperties messageProperties = new MessageProperties();
-            messageProperties.setContentType("application/json");
-
-            // Create a RabbitMQ message with the JSON payload
-            Message rabbitMessage = MessageBuilder.withBody(jsonMessage.getBytes()).andProperties(messageProperties)
-                    .build();
-
-            // Publish message to RabbitMQ exchange
-            rabbitTemplate.send(exchangeName, "product.deleted", rabbitMessage);
-        } catch (JsonProcessingException e) {
-            // Handle JSON serialization error
-            log.error(e.getMessage());
-        }
+        ProductDeleteMessage productDeleteMessage = new ProductDeleteMessage(id);
+        messageSender.sendProductDeleteMessage(productDeleteMessage);
     }
 
-    public void updateProduct(Product product, ProductUpdateRequest request) {
-        product.setPrice(request.price());
+    public void updateProduct(Product product, ProductUpdateMessage updatedProduct) {
+        product.setPrice(updatedProduct.price());
+        product.setOldPrice(updatedProduct.price());
         productRepository.save(product);
 
         log.info("Updated product: {}", product);
