@@ -30,7 +30,7 @@ public class CustomerProductControllerTest {
 
     @Test
     public void testAddProductToCustomer() throws Exception {
-        CustomerProductAddRequest request = new CustomerProductAddRequest(UUID.fromString("0851d075-e483-477f-a0fc-c5f8779efb02"), UUID.fromString("297b5734-2c51-4f6f-9775-96ce3f5c9eab");
+        CustomerProductAddRequest request = new CustomerProductAddRequest(UUID.fromString("0851d075-e483-477f-a0fc-c5f8779efb02"), UUID.fromString("297b5734-2c51-4f6f-9775-96ce3f5c9eab"));
 
         mockMvc.perform(post("/api/v1")
                         .contentType(MediaType.APPLICATION_JSON)
