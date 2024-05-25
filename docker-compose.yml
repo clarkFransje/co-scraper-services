@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.8.9-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: coscraper
+      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_DEFAULT_VHOST: /
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql
+    environment:
+      POSTGRES_USER: co-scraper
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: co-scraper
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+      POSTGRES_INITDB_XLOGDIR: /var/lib/postgresql/data/pg_xlog
+      POSTGRES_CONFIG: |
+        max_connections=300
+        shared_buffers=128MB
+        effective_cache_size=4GB
+        work_mem=65536
+        maintenance_work_mem=524288
+        checkpoint_completion_target=0.7
+        wal_buffers=16MB
+        default_statistics_target=100
+        random_page_cost=1.1
+        effective_io_concurrency=200
+        ssl=on
+        ssl_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+        ssl_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+        ssl_ca_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+    command: bash -c 'echo "CREATE DATABASE product;" && echo "CREATE DATABASE customer;" && echo "CREATE DATABASE customer_product;" && echo "CREATE DATABASE store;" && docker-entrypoint.sh postgres'
+    ports:
+      - "5432:5432"  # PostgreSQL default port
