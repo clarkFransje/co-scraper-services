@@ -53,6 +53,7 @@ jobs:
           for file in k8s-configs/services/*.yaml; do
             kubectl apply -f "$file"
           done
+          for file in k8s-configs/ingress/*.yaml; do
+            kubectl apply -f "$file"
+          done
           kubectl apply -f k8s-configs/hpa-services.yaml
-          kubectl apply -f k8s-configs/ingress.yaml
-          kubectl apply -f k8s-configs/ingress-controller.yaml
