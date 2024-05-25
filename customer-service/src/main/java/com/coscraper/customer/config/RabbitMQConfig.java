@@ -11,12 +11,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${spring.rabbitmq.queue}")
+    @Value("${spring.rabbitmq.customer_queue}")
     private String queueName;
 
-    @Value("${spring.rabbitmq.exchange}")
+    @Value("${spring.rabbitmq.customer_exchange}")
     private String exchangeName;
-
 
     // Define the exchange for customer events
     @Bean

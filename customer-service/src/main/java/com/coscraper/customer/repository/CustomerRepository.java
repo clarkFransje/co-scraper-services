@@ -1,8 +1,15 @@
 package com.coscraper.customer.repository;
 
-import com.coscraper.customer.model.Customer;
+import com.coscraper.customer.models.Customer;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CustomerRepository extends JpaRepository<Customer, Integer> {
+import java.util.Optional;
+import java.util.UUID;
+
+public interface CustomerRepository extends JpaRepository<Customer, UUID> {
+    @Transactional
+    void deleteById(UUID customerId);
+    Optional<Customer> findById(UUID customerId);
     Customer findByEmail(String email);
 }

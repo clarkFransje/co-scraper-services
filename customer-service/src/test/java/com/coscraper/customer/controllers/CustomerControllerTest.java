@@ -1,7 +1,7 @@
 package com.coscraper.customer.controllers;
 
 import com.coscraper.customer.controller.CustomerController;
-import com.coscraper.customer.model.CustomerAddRequest;
+import com.coscraper.customer.models.CustomerAddRequest;
 import com.coscraper.customer.service.CustomerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -11,10 +11,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 
 @WebMvcTest(CustomerController.class)
@@ -44,10 +45,10 @@ public class CustomerControllerTest {
 
     @Test
     public void testDeleteCustomer() throws Exception {
-        mockMvc.perform(delete("/api/v1/1"))
+        mockMvc.perform(delete("/api/v1/e24e03df-c66e-4ddd-b047-943c63477f5f"))
                 .andExpect(status().isOk());
 
         // Mocking the behavior of deleteCustomerById method
-        doNothing().when(customerService).deleteCustomerById(1);
+        doNothing().when(customerService).deleteCustomerById(UUID.fromString("e24e03df-c66e-4ddd-b047-943c63477f5f"));
     }
 }
