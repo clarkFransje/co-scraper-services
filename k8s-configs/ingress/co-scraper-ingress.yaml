@@ -9,31 +9,36 @@ spec:
   rules:
     - http:
         paths:
-        - path: /product
-          pathType: Prefix
-          backend:
-            service:
-              name: product-service
-              port:
-                number: 8080
-        - path: /customer
-          pathType: Prefix
-          backend:
-            service:
-              name: customer-service
-              port:
-                number: 8081
-        - path: /customer-product
-          pathType: Prefix
-          backend:
-            service:
-              name: customer-product-service
-              port:
-                number: 8082
-        - path: /store
-          pathType: Prefix
-          backend:
-            service:
-              name: store-service
-              port:
-                number: 8083
+          - path: /product
+            pathType: Prefix
+            backend:
+              service:
+                name: product-service
+                port:
+                  number: 8080
+          - path: /customer
+            pathType: Prefix
+            backend:
+              service:
+                name: customer-service
+                port:
+                  number: 8081
+          - path: /customer-product
+            pathType: Prefix
+            backend:
+              service:
+                name: customer-product-service
+                port:
+                  number: 8082
+          - path: /store
+            pathType: Prefix
+            backend:
+              service:
+                name: store-service
+                port:
+                  number: 8083
+  defaultBackend:
+    service:
+      name: nginx
+      port:
+        number: 80

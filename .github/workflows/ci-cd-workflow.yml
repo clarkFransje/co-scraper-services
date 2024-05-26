@@ -50,9 +50,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Azure CLI Login
+        run: az login --service-principal --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+
       - name: Login to Azure Container Registry
-        run: |
-          az acr login --name ${{ secrets.AZURE_REGISTRY }} --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: az acr login --name ${{ secrets.AZURE_REGISTRY }}
 
       - name: Build and push Docker image for ${{ matrix.service }}
         run: |
@@ -68,6 +70,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Azure CLI Login
+        run: az login --service-principal --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Get AKS credentials
         run: az aks get-credentials --resource-group co-scraper --name co-scraper
