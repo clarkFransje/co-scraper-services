@@ -15,7 +15,7 @@ public class ProductListener {
     private CustomerProductService customerProductService;
     private final Logger log = Logger.getLogger(this.getClass().getName());
 
-    @RabbitListener(queues = "${spring.rabbitmq.queue_delete_product}")
+    @RabbitListener(queues = "${spring.rabbitmq.product_delete_queue}")
     public void handleMessage(ProductDeleteMessage productDeleteMessage) {
         log.info("Received Message: " + productDeleteMessage.toString());
         customerProductService.deleteProductById(productDeleteMessage.productId());
