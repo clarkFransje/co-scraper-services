@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: customer-service
-          image: coscraper.azurecr.io/customer-service:latest
+          image: coscraper.azurecr.io/customer-service:945d074c4c17d1f9bd41dccb57330ca1851b3c23
           ports:
             - containerPort: 8081
           env:
