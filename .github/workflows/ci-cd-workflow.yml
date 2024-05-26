@@ -102,9 +102,6 @@ jobs:
           for file in k8s-configs/config-maps/*.yaml; do
             kubectl apply -f "$file"
           done
-          for file in k8s-configs/network-policies/*.yaml; do
-            kubectl apply -f "$file"
-          done
           for file in k8s-configs/services/*.yaml; do
             kubectl apply -f "$file"
           done
