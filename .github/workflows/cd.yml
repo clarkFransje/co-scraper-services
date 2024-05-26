@@ -30,14 +30,15 @@ jobs:
 
       - name: Set Image Tags
         id: vars
-        run: echo "::set-output name=tag::${GITHUB_SHA}"
+        run: echo "TAG=${GITHUB_SHA}" >> $GITHUB_ENV
 
       - name: Update Kubernetes Manifests
         run: |
-          TAG=${{ steps.vars.outputs.tag }}
+          TAG=${{ env.TAG }}
           sed -i "s|image: coscraper.azurecr.io/customer-service:.*|image: coscraper.azurecr.io/customer-service:$TAG|" k8s-configs/deployments/customer-deployment.yaml
           sed -i "s|image: coscraper.azurecr.io/product-service:.*|image: coscraper.azurecr.io/product-service:$TAG|" k8s-configs/deployments/product-deployment.yaml
           sed -i "s|image: coscraper.azurecr.io/customer-product-service:.*|image: coscraper.azurecr.io/customer-product-service:$TAG|" k8s-configs/deployments/customer-product-deployment.yaml
+          sed -i "s|image: coscraper.azurecr.io/store-service:.*|image: coscraper.azurecr.io/store-service:$TAG|" k8s-configs/deployments/store-deployment.yaml
 
       - name: Deploy to Kubernetes
         run: |

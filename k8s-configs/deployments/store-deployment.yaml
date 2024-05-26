@@ -16,7 +16,6 @@ spec:
       containers:
         - name: store-service
           image: coscraper.azurecr.io/store-service:latest
-          imagePullPolicy: Never
           ports:
             - containerPort: 8080
           env:
