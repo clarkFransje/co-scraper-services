@@ -18,6 +18,11 @@ spec:
           image: coscraper.azurecr.io/customer-product-service:df260cb38179ff34cdfa131eb3312d89f19a35d0
           ports:
             - containerPort: 8082
+          resources:
+            requests:
+              cpu: "250m"
+            limits:
+              cpu: "500m"
           env:
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://postgresql:5432/customer_product
