@@ -101,7 +101,7 @@ jobs:
       - name: Get AKS credentials
         run: az aks get-credentials --resource-group co-scraper --name co-scraper
       - name: Set up kubectl
-        uses: azure/setup-kubectl@v1
+        uses: azure/setup-kubectl@v3
         with:
           version: 'latest'
       - name: Set Image Tags
