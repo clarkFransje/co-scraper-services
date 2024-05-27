@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: product-service
-
+  namespace: co-scraper
 spec:
   replicas: 1
   selector:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: product-service
-          image: coscraper.azurecr.io/product-service:945d074c4c17d1f9bd41dccb57330ca1851b3c23
+          image: coscraper.azurecr.io/product-service:df260cb38179ff34cdfa131eb3312d89f19a35d0
           ports:
             - containerPort: 8080
           env:
