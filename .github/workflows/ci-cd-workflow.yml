@@ -122,10 +122,10 @@ jobs:
       - name: Update Kubernetes Manifests
         run: |
           TAG=${{ env.TAG }}
-          sed -i "s|image: coscraper.azurecr.io/customer-service:.*|image: coscraper.azurecr.io/customer-service:$TAG|" k8s-configs/deployments/customer-deployment.yaml
-          sed -i "s|image: coscraper.azurecr.io/product-service:.*|image: coscraper.azurecr.io/product-service:$TAG|" k8s-configs/deployments/product-deployment.yaml
-          sed -i "s|image: coscraper.azurecr.io/customer-product-service:.*|image: coscraper.azurecr.io/customer-product-service:$TAG|" k8s-configs/deployments/customer-product-deployment.yaml
-          sed -i "s|image: coscraper.azurecr.io/store-service:.*|image: coscraper.azurecr.io/store-service:$TAG|" k8s-configs/deployments/store-deployment.yaml
+          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-service:.*|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-service:$TAG|" k8s-configs/deployments/customer-deployment.yaml
+          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/product-service:.*|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/product-service:$TAG|" k8s-configs/deployments/product-deployment.yaml
+          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-product-service:.*|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-product-service:$TAG|" k8s-configs/deployments/customer-product-deployment.yaml
+          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/store-service:.*|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/store-service:$TAG|" k8s-configs/deployments/store-deployment.yaml
 
       - name: Deploy to Kubernetes
         run: |
