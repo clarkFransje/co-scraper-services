@@ -35,6 +35,6 @@ jobs:
           for service in "${services[@]}"; do
             echo "Building and analyzing $service"
             cd $service
-            mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=clarkFransje_co-scraper-services-$service
+            mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=clarkFransje_co-scraper-services
             cd ..
           done
