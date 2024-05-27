@@ -3,10 +3,6 @@ kind: Ingress
 metadata:
   name: co-scraper
   namespace: co-scraper
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"  # Set to "true" if you have SSL configured
-    nginx.ingress.kubernetes.io/use-regex: "false"
 spec:
   ingressClassName: nginx
   rules:
@@ -37,6 +33,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: customer-product-service
+                name: store-service
                 port:
-                  number: 8082
+                  number: 8083
