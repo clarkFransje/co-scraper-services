@@ -60,15 +60,6 @@ This service handles the relationships and interactions between customers and pr
 ### Kubernetes Configs
 Configuration files for deploying the services in a Kubernetes cluster are located in the `k8s-configs` directory.
 
-## Contributing
-Contributions are welcome! Please fork the repository and create a pull request with your changes. Ensure that your code follows the project's coding guidelines and includes necessary tests.
-
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/YourFeature`)
-3. Commit your changes (`git commit -m 'Add some feature'`)
-4. Push to the branch (`git push origin feature/YourFeature`)
-5. Create a pull request
-
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
