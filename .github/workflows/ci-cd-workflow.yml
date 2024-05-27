@@ -15,6 +15,7 @@ jobs:
       - id: set-matrix
         run: |
           matrix=$(find . -name pom.xml -exec dirname {} \; | jq -R -s -c 'split("\n")[:-1]')
+          echo "Matrix: ${matrix}"
           echo "::set-output name=matrix::${matrix}"
 
   build_and_test:
@@ -37,7 +38,7 @@ jobs:
           mvn clean install
 
   sonarcloud:
-    needs: build_and_test
+    needs: setup_matrix
     name: SonarCloud
     runs-on: ubuntu-latest
     strategy:
@@ -71,7 +72,7 @@ jobs:
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=clarkFransje_co-scraper-services
 
   build_and_push_docker_images:
-    needs: build_and_test
+    needs: setup_matrix
     name: Build and Push Docker Images
     runs-on: ubuntu-latest
     strategy:
@@ -111,9 +112,9 @@ jobs:
         run: |
           TAG=${{ env.TAG }}
           sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-service:.*|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-service:$TAG|" k8s-configs/deployments/customer-deployment.yaml
-          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/product-service:.*|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/product-service:$TAG|" k8s-configs/deployments/product-deployment.yaml
-          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-product-service:.*|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-product-service:$TAG|" k8s-configs/deployments/customer-product-deployment.yaml
-          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/store-service:.*|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/store-service:$TAG|" k8s-configs/deployments/store-deployment.yaml
+          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/product-service:.*|image: $TAG|" k8s-configs/deployments/product-deployment.yaml
+          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-product-service:.*|image: $TAG|" k8s-configs/deployments/customer-product-deployment.yaml
+          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/store-service:.*|image: $TAG|" k8s-configs/deployments/store-deployment.yaml
       - name: Deploy to Kubernetes
         run: |
           for file in k8s-configs/deployments/*.yaml; do
