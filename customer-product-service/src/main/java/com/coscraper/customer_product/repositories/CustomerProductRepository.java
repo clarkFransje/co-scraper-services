@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface CustomerProductRepository extends JpaRepository<CustomerProduct, UUID> {
@@ -18,5 +19,8 @@ public interface CustomerProductRepository extends JpaRepository<CustomerProduct
     @Modifying
     @Query("DELETE FROM CustomerProduct cp WHERE cp.customerId = :customerId")
     void deleteByCustomerId(UUID customerId);
+
+    @Query("SELECT cp FROM CustomerProduct cp WHERE cp.customerId = :customerId")
+    List<CustomerProduct> findAllByCustomerId(UUID customerId);
 }
 
