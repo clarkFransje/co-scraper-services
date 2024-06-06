@@ -6,10 +6,12 @@ server:
 spring:
   application:
     name: store
+
   datasource:
     url: jdbc:postgresql://localhost:5432/store
     username: 'co-scraper'
     password: 'password'
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -20,3 +22,8 @@ spring:
     password: 'password'
     product_exchange: 'productExchange'
 
+okta:
+  oauth2:
+    issuer: https://dev-4uuuq0lgb8apygr7.us.auth0.com/
+    audience: https://co-scraper-api.com
+    groupsClaim: permissions

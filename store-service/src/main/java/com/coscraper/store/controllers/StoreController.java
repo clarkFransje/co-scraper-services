@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.logging.Logger;
 
 @Slf4j
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("api/v1")
 public class StoreController {
     private final StoreService storeService;
@@ -38,13 +40,13 @@ public class StoreController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAuthority('read:stores')")
     public ResponseEntity<List<Store>> getStores() {
         List<Store> stores = storeService.findAllStores();
-
         return ResponseEntity.ok().body(stores);
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     public ResponseEntity<Product> searchProductByQuery(@RequestBody StoreGetProductRequest storeGetProductRequest) throws ExecutionException, InterruptedException {
         Optional<Store> store = storeService.findStoreById(storeGetProductRequest.storeId());
 
