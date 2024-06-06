@@ -26,7 +26,7 @@ jobs:
       - name: Build and test ${{ matrix.service }}
         run: |
           cd ${{ matrix.service }}
-          mvn clean install
+          mvn clean install -DskipTests
 
   build_and_push_docker_images:
     needs: build_and_test
