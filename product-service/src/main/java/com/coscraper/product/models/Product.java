@@ -15,7 +15,6 @@ import java.util.UUID;
 @Entity
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private UUID storeId;
     private String name;

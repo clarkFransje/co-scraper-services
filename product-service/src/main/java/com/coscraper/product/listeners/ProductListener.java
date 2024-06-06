@@ -22,6 +22,7 @@ public class ProductListener {
     @RabbitListener(queues = "${spring.rabbitmq.queue_product_create}")
     public void handleCreateMessage(ProductCreateMessage productCreateMessage) {
         log.info("Received message to create product " + productCreateMessage.name());
+
         productService.createProduct(productCreateMessage);
     }
 

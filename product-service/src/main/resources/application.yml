@@ -23,3 +23,8 @@ spring:
     queue_product_delete: 'productDeleteQueue'
     product_exchange: 'productExchange'
 
+okta:
+  oauth2:
+    issuer: https://dev-4uuuq0lgb8apygr7.us.auth0.com/
+    audience: https://co-scraper-api.com
+    groupsClaim: permissions

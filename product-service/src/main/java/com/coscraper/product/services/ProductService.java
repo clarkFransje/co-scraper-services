@@ -28,6 +28,7 @@ public class ProductService {
 
     public void createProduct(ProductCreateMessage request) {
         Product product = Product.builder()
+                .id(request.id())
                 .name(request.name())
                 .storeId(request.storeId())
                 .sku(request.sku())
@@ -43,6 +44,10 @@ public class ProductService {
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();
+    }
+
+    public List<Product> getAllProductsById(List<UUID> ids) {
+        return productRepository.findAllById(ids);
     }
 
     public Optional<Product> getProductById(UUID id) {
