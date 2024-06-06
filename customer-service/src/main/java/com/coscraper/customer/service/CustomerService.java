@@ -8,7 +8,6 @@ import com.coscraper.customer.models.CustomerDeleteMessage;
 import com.coscraper.customer.repository.CustomerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -33,9 +32,9 @@ public class CustomerService {
                 .build();
 
         // Check if email has been used by user
-        Customer existingCustomer = customerRepository.findByEmail(request.email());
-        if (existingCustomer != null) {
-            log.info("Customer with email {} already exists", existingCustomer.getEmail());
+        Optional<Customer> existingCustomer = findCustomerByEmail(request.email());
+        if (existingCustomer.isPresent()) {
+            log.info("Customer with email {} already exists", existingCustomer.get().getEmail());
             return Optional.empty();
         }
         else {
@@ -43,6 +42,15 @@ public class CustomerService {
             log.info("New customer added {}", customer.getId());
             return Optional.of(customer);
         }
+    }
+
+    public Optional<Customer> findCustomerByEmail(String email) {
+        Customer existingCustomer = customerRepository.findByEmail(email);
+        if (existingCustomer != null) {
+            return Optional.of(existingCustomer);
+        }
+
+        return Optional.empty();
     }
 
     public void deleteCustomerById(UUID id) {
