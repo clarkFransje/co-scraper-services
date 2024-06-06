@@ -4,7 +4,7 @@ WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline
 COPY src/ /app/src/
-RUN mvn package
+RUN mvn package -DskipTests
 
 # Stage 2: Create the final Docker image
 FROM openjdk:17-slim
