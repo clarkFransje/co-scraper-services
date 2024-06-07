@@ -21,6 +21,8 @@ spring:
     product_delete_queue: 'productDeleteQueue'
     customer_delete_queue: 'customerQueue'
 
+  secret: CqBN7umAngTj1dME7HksqD3gqxiHR5AMNQJ3wfdr7WU=
+
 okta:
   oauth2:
     issuer: https://dev-4uuuq0lgb8apygr7.us.auth0.com/

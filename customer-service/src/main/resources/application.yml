@@ -21,6 +21,8 @@ spring:
     customer_queue: 'customerQueue'
     customer_exchange: 'customerExchange'
 
+  secret: CqBN7umAngTj1dME7HksqD3gqxiHR5AMNQJ3wfdr7WU=
+
 okta:
   oauth2:
     issuer: https://dev-4uuuq0lgb8apygr7.us.auth0.com/
