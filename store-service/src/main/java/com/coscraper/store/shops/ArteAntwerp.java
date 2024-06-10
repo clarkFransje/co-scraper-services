@@ -3,13 +3,13 @@ package com.coscraper.store.shops;
 import com.coscraper.store.enums.ProductScrapingStatus;
 import com.coscraper.store.models.shop.ShopResult;
 import com.coscraper.store.models.product.Product;
-import lombok.Getter;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 
@@ -20,8 +20,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ArteAntwerp implements Shop {
     private static final Logger log = LoggerFactory.getLogger(ArteAntwerp.class);
@@ -30,7 +28,7 @@ public class ArteAntwerp implements Shop {
     private final UUID id;
     private final String baseUrl;
 
-    public ArteAntwerp(UUID id, String name, String baseUrl) {
+    public ArteAntwerp(UUID id, String baseUrl) {
         this.id = id;
         this.baseUrl = baseUrl;
     }
@@ -42,24 +40,20 @@ public class ArteAntwerp implements Shop {
                 String productQueryUrl = createProductQueryUrl(query);
                 String responseContents = fetchResponseContents(productQueryUrl);
 
-                ArteAntwerpResponse arteAntwerpResponse = parseResponse(responseContents);
-                if (arteAntwerpResponse == null) {
-                    return new ShopResult(null, ProductScrapingStatus.STORE_ERROR);
-                }
-
-                List<Product> products = extractProduct(arteAntwerpResponse);
-                if (products.isEmpty()) {
+                List<String> productUrls = extractProductUrls(responseContents);
+                if (productUrls.isEmpty()) {
                     return new ShopResult(null, ProductScrapingStatus.PRODUCT_NOT_FOUND);
                 }
 
                 // Always return the first product
-                Product product = products.get(0);
+                String productUrl = productUrls.get(0);
+                Product product = scrapeProductFromUrl(productUrl).get();
                 return new ShopResult(Optional.ofNullable(product), ProductScrapingStatus.PRODUCT_FOUND);
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 log.error("Error fetching response contents: {}", e.getMessage());
                 return new ShopResult(Optional.empty(), ProductScrapingStatus.STORE_ERROR);
-            } catch (JSONException e) {
-                log.error("Error parsing JSON response: {}", e.getMessage());
+            } catch (Exception e) {
+                log.error("Error occurred: {}", e.getMessage());
                 return new ShopResult(Optional.empty(), ProductScrapingStatus.STORE_ERROR);
             }
         });
@@ -69,21 +63,9 @@ public class ArteAntwerp implements Shop {
     public Future<Product> scrapeProductFromUrl(String url) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                String responseContents = fetchResponseContents(url);
-                ArteAntwerpResponse arteAntwerpResponse = parseResponse(responseContents);
-                if (arteAntwerpResponse == null) {
-                    log.error("Error fetching response contents from URL: {}", url);
-                }
-
-                List<Product> productVariants = extractProduct(arteAntwerpResponse);
-                if (productVariants.isEmpty()) {
-                    log.error("No product found for url: {}", url);
-                    return null;
-                } else {
-                    // Always return the first
-                    return productVariants.get(0);
-                }
-            } catch (IOException | JSONException e) {
+                Document document = Jsoup.connect(url).get();
+                return extractProductDetails(document, url);
+            } catch (IOException e) {
                 log.error("Error occurred while scraping product: {}", e.getMessage());
                 throw new RuntimeException("Error scraping product", e);
             }
@@ -99,50 +81,64 @@ public class ArteAntwerp implements Shop {
         return document.html();
     }
 
-    private ArteAntwerpResponse parseResponse(String responseContents) throws JSONException {
+    private List<String> extractProductUrls(String responseContents) throws IOException {
+        List<String> productUrls = new ArrayList<>();
         Document document = Jsoup.parse(responseContents);
-        Element scriptElement = document.getElementById("web-pixels-manager-setup");
-        if (scriptElement == null) return null;
+        Elements productElements = document.select(".product-link"); // Adjust the selector based on actual HTML
 
-        String html = scriptElement.html();
-        Matcher matcher = Pattern.compile("search_submitted\", (.+?)\\);").matcher(html);
-        if (!matcher.find()) return null;
-
-        String json = matcher.group(1).replace("'", "\"");
-        return new ArteAntwerpResponse(json);
-    }
-
-    private List<Product> extractProduct(ArteAntwerpResponse arteAntwerpResponse) throws JSONException {
-        List<Product> products = new ArrayList<>();
-        JSONArray productVariants = arteAntwerpResponse.getSearchResult().getJSONArray("productVariants");
-
-        for (int i = 0; i < productVariants.length(); i++) {
-            JSONObject variant = productVariants.getJSONObject(i);
-            JSONObject product = variant.getJSONObject("product");
-            JSONObject image = variant.getJSONObject("image");
-
-            UUID productId = UUID.randomUUID();
-            String name = product.getString("title");
-            String sku = variant.getString("sku");
-            String url = baseUrl + product.getString("url");
-            Double price = variant.getJSONObject("price").getDouble("amount");
-            String imageUrl = "https:" + image.getString("src");
-
-            Product prod = new Product(productId, this.id, name, sku, url, price, price, imageUrl);
-            products.add(prod);
-
-            log.info("Found product: {}", prod);
+        for (Element element : productElements) {
+            String url = element.attr("href");
+            if (!url.startsWith("http")) {
+                url = baseUrl + url;
+            }
+            productUrls.add(url);
         }
 
-        return products;
+        return productUrls;
     }
 
-    @Getter
-    private static class ArteAntwerpResponse {
-        private final JSONObject searchResult;
+    private Product extractProductDetails(Document document, String url) {
+        UUID productId = UUID.randomUUID();
 
-        public ArteAntwerpResponse(String json) throws JSONException {
-            this.searchResult = new JSONObject(json).getJSONObject("searchResult");
+        // Check for JSON-LD script tag
+        Element jsonLdElement = document.select("script[type=application/ld+json]:nth-of-type(3)").first();
+        if (jsonLdElement != null) {
+            try {
+                String json = jsonLdElement.html();
+                JSONObject jsonObject = new JSONObject(json);
+                if (jsonObject.getString("@type").equals("Product")) {
+                    String name = jsonObject.getString("name");
+                    String description = jsonObject.getString("description");
+                    String color = document.select("div.color_selector h3").text().replace("Color: ", "");
+                    String imageUrl = jsonObject.getJSONArray("image").getString(0);
+                    double price = jsonObject.getJSONArray("offers").getJSONObject(0).getDouble("price");
+
+                    return new Product(productId, this.id, name, description, color, url, price, price, imageUrl);
+                }
+            } catch (JSONException e) {
+                log.error("Error parsing JSON-LD data: {}", e.getMessage());
+            }
         }
+
+        // Fallback to HTML scraping if JSON-LD is not found
+        String name = document.select("h1.product-single__title").text(); // Updated selector for the name
+        String description = document.select("div.product-single__description").text(); // Updated selector for description
+        String sku = "";
+        String priceText = document.select("span.price-item").text().replace("€", "").replace(",", "").trim();
+        double price = 0.0;
+        if (!priceText.isEmpty()) {
+            try {
+                price = Double.parseDouble(priceText);
+            } catch (NumberFormatException e) {
+                log.error("Error parsing price: {}", e.getMessage());
+            }
+        }
+        String imageUrl = document.select("img.product__media-image").attr("src");
+
+        if (!imageUrl.startsWith("http")) {
+            imageUrl = baseUrl + imageUrl;
+        }
+
+        return new Product(productId, this.id, name, description, sku, url, price, price, imageUrl);
     }
 }

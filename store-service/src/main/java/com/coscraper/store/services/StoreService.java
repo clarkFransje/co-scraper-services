@@ -29,6 +29,7 @@ public record StoreService(StoreRepository storeRepository) {
                 .description(request.description().get())
                 .imageUrl(request.imageUrl().get())
                 .language(request.language())
+                .age(0)
                 .build();
 
         storeRepository.save(store);

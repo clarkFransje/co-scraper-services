@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,12 +31,15 @@ public class ProductService {
         Product product = Product.builder()
                 .id(request.id())
                 .name(request.name())
+                .description(request.description())
                 .storeId(request.storeId())
-                .sku(request.sku())
+                .color(request.color())
                 .url(request.url())
                 .price(request.price())
                 .oldPrice(request.oldPrice())
                 .imageUrl(request.imageUrl())
+                .created(new Date())
+                .updated(new Date())
                 .build();
 
         productRepository.save(product);
@@ -65,6 +69,7 @@ public class ProductService {
     public void updateProduct(Product product, ProductUpdateMessage updatedProduct) {
         product.setPrice(updatedProduct.price());
         product.setOldPrice(updatedProduct.price());
+        product.setUpdated(new Date());
         productRepository.save(product);
 
         log.info("Updated product: {}", product);

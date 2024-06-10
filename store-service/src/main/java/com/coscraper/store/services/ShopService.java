@@ -28,7 +28,7 @@ public class ShopService {
 
     static {
         storeCreators.put("ArteAntwerp", store -> new ArteAntwerp(
-                store.getId(), store.getName(), store.getBaseUrl()));
+                store.getId(), store.getBaseUrl()));
     }
 
     public ShopService(MessageSender messageSender) {

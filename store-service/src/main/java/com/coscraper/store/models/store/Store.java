@@ -27,4 +27,7 @@ public class Store {
     @Nullable
     private String imageUrl;
     private String language;
+
+    @Nullable
+    private Integer age;
 }

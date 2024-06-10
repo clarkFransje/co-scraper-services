@@ -25,6 +25,8 @@ spring:
 
 okta:
   oauth2:
-    issuer: https://dev-4uuuq0lgb8apygr7.us.auth0.com/
+    issuer: ${AUTH0_DOMAIN}
     audience: https://co-scraper-api.com
     groupsClaim: permissions
+    client-secret: ${AUTH0_CLIENT_SECRET}
+    client-id: ${AUTH0_CLIENT_ID}

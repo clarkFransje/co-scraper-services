@@ -6,8 +6,10 @@ import com.coscraper.customer.models.Customer;
 import com.coscraper.customer.models.CustomerAddRequest;
 import com.coscraper.customer.models.CustomerDeleteMessage;
 import com.coscraper.customer.repository.CustomerRepository;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,6 +20,8 @@ public class CustomerService {
     private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
     private final CustomerRepository customerRepository;
     private final MessageSender messageSender;
+    @Value("${okta.oauth2.issuer}")
+    private String auth0Domain;
 
     public CustomerService(CustomerRepository customerRepository, MessageSender messageSender) {
         this.customerRepository = customerRepository;
