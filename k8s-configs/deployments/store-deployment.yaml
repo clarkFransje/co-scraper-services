@@ -15,9 +15,9 @@ spec:
     spec:
       containers:
         - name: store-service
-          image: acrcoscraper.azurecr.io/store-service:93797e60ea42f712c8150e739cc61f06044c37a8
+          image: acrcoscraper.azurecr.io/store-service:dda24f097f0dcf05b09ee2bcb18eb494a3d877c7
           ports:
-            - containerPort: 8080
+            - containerPort: 8083
           resources:
             requests:
               cpu: "250m"

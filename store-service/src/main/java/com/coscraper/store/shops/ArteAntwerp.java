@@ -14,16 +14,16 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ArteAntwerp implements Shop {
     private static final Logger log = LoggerFactory.getLogger(ArteAntwerp.class);
-    private static final String SEARCH_PARAMS = "/search?q=";
+    private static final String SEARCH_PARAMS = "/search?&options[prefix]=last&type=product&q=";
 
     private final UUID id;
     private final String baseUrl;
@@ -40,14 +40,18 @@ public class ArteAntwerp implements Shop {
                 String productQueryUrl = createProductQueryUrl(query);
                 String responseContents = fetchResponseContents(productQueryUrl);
 
-                List<String> productUrls = extractProductUrls(responseContents);
-                if (productUrls.isEmpty()) {
+                Map<String, String> products = extractProductTitlesAndUrls(responseContents);
+                if (products.isEmpty()) {
                     return new ShopResult(null, ProductScrapingStatus.PRODUCT_NOT_FOUND);
                 }
 
-                // Always return the first product
-                String productUrl = productUrls.get(0);
-                Product product = scrapeProductFromUrl(productUrl).get();
+                // Find the best match based on the query
+                String bestProductUrl = findBestProductMatch(query, products);
+                if (bestProductUrl == null) {
+                    return new ShopResult(null, ProductScrapingStatus.PRODUCT_NOT_FOUND);
+                }
+
+                Product product = scrapeProductFromUrl(bestProductUrl).get();
                 return new ShopResult(Optional.ofNullable(product), ProductScrapingStatus.PRODUCT_FOUND);
             } catch (IOException | InterruptedException e) {
                 log.error("Error fetching response contents: {}", e.getMessage());
@@ -81,20 +85,58 @@ public class ArteAntwerp implements Shop {
         return document.html();
     }
 
-    private List<String> extractProductUrls(String responseContents) throws IOException {
-        List<String> productUrls = new ArrayList<>();
+    private Map<String, String> extractProductTitlesAndUrls(String responseContents) throws IOException {
+        Map<String, String> products = new HashMap<>();
         Document document = Jsoup.parse(responseContents);
-        Elements productElements = document.select(".product-link"); // Adjust the selector based on actual HTML
+        Elements productElements = document.select("a.product-link"); // Adjust the selector based on actual HTML
 
         for (Element element : productElements) {
             String url = element.attr("href");
+            String title = element.select("img").attr("alt"); // Extract title from the img alt attribute
+
             if (!url.startsWith("http")) {
                 url = baseUrl + url;
             }
-            productUrls.add(url);
+
+            products.put(title, url);
         }
 
-        return productUrls;
+        return products;
+    }
+
+    private String findBestProductMatch(String query, Map<String, String> products) {
+        String bestMatchUrl = null;
+        int highestScore = 0;
+
+        for (Map.Entry<String, String> entry : products.entrySet()) {
+            String title = entry.getKey();
+            String url = entry.getValue();
+
+            int score = calculateRelevanceScore(query, title);
+            if (score > highestScore) {
+                highestScore = score;
+                bestMatchUrl = url;
+            }
+        }
+
+        return bestMatchUrl;
+    }
+
+    private int calculateRelevanceScore(String query, String title) {
+        // Basic scoring mechanism: count the number of query words present in the title
+        String[] queryWords = query.toLowerCase().split(" ");
+        String[] titleWords = title.toLowerCase().split(" ");
+
+        int score = 0;
+        for (String queryWord : queryWords) {
+            for (String titleWord : titleWords) {
+                if (queryWord.equals(titleWord)) {
+                    score++;
+                }
+            }
+        }
+
+        return score;
     }
 
     private Product extractProductDetails(Document document, String url) {

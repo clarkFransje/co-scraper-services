@@ -21,6 +21,7 @@ public class Product {
     private UUID id;
     private UUID storeId;
     private String name;
+    @Column(columnDefinition = "text")
     private String description;
     private String color;
     private String url;
