@@ -34,7 +34,6 @@ public class CustomerProductController {
         log.info("Removing product from customer {}", customerProductDeleteRequest);
     }
 
-    @PreAuthorize("hasAuthority('read:products')")
     @GetMapping("/{id}")
     public List<CustomerProductsGetRequest> getAllCustomerProducts(@PathVariable("id") UUID id) {
         return customerProductService.getProductsById(id);
