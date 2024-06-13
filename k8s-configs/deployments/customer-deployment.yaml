@@ -53,5 +53,10 @@ spec:
                 secretKeyRef:
                   name: auth0-secrets
                   key: auth0-clientSecret
+            - name: JWT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: customer-secret
+                  key: jwt-secret
       imagePullSecrets:
         - name: acr-secret
