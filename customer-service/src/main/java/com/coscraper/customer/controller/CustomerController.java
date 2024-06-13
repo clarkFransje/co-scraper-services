@@ -33,7 +33,6 @@ public class CustomerController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
-    @PreAuthorize("hasAuthority('read:stores')")
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable("id") UUID id) {
         Optional<Customer> customer = customerService.findCustomerById(id);
@@ -41,7 +40,6 @@ public class CustomerController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
-    @PreAuthorize("hasAuthority('read:stores')")
     @PostMapping
     public ResponseEntity<Customer> getCustomerByEmail(@RequestBody CustomerGetRequest customerGetRequest) {
         Optional<Customer> customer = customerService.findCustomerByEmail(customerGetRequest.email());
