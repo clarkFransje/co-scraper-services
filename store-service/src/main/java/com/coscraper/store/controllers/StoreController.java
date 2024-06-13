@@ -40,7 +40,6 @@ public class StoreController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('read:stores')")
     public ResponseEntity<List<Store>> getStores() {
         List<Store> stores = storeService.findAllStores();
         return ResponseEntity.ok().body(stores);

@@ -34,14 +34,12 @@ public class ProductController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('read:products')")
     public ResponseEntity<List<Product>> getAllProducts() {
         List<Product> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
     }
 
     @PostMapping("/scope")
-    @PreAuthorize("hasAuthority('read:products')")
     public ResponseEntity<List<Product>> getAllProductsByScope(@RequestBody ProductScopeGetRequest productScopeGetRequest) {
         List<Product> products = productService.getAllProductsById(productScopeGetRequest.productIds());
         if (products.isEmpty()) {
