@@ -62,9 +62,9 @@ public class StoreController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
-    @GetMapping("/check-prices")
-    public void checkPrices(@RequestBody StoreCheckPricesRequest storeCheckPricesRequest) {
-
+    @PostMapping("/check-prices")
+    public void checkPrices(@RequestBody List<StoreCheckPricesRequest> storeCheckPricesRequest) throws ExecutionException, InterruptedException {
+        storeService.checkProductPrices(storeCheckPricesRequest);
     }
 
     @PostMapping
