@@ -59,6 +59,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install doctl
+        run: |
+          curl -sL https://github.com/digitalocean/doctl/releases/download/v1.107.0/doctl-1.107.0-linux-amd64.tar.gz | tar -xzv
+          sudo mv doctl /usr/local/bin
+      - name: Authenticate with DigitalOcean
+        run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Fetch Kubernetes Credentials
+        run: doctl kubernetes cluster kubeconfig save co-scraper-cluster
       - name: Set Image Tags
         id: vars
         run: echo "TAG=${GITHUB_SHA}" >> $GITHUB_ENV
