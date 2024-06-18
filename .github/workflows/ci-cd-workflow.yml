@@ -42,15 +42,16 @@ jobs:
           - store-service
     steps:
       - uses: actions/checkout@v2
-      - name: Azure CLI Login
-        run: az login --service-principal --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-      - name: Login to Azure Container Registry
-        run: az acr login --name ${{ secrets.AZURE_REGISTRY }}
+      - name: Login to Digital Ocean Container Registry
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          DOCKER_USERNAME: ${{ secrets.DIGITALOCEAN_USERNAME }}
+        run: echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin registry.digitalocean.com
       - name: Build and push Docker image for ${{ matrix.service }}
         run: |
           cd ${{ matrix.service }}
-          docker build -t ${{ secrets.AZURE_REGISTRY }}.azurecr.io/${{ matrix.service }}:${{ github.sha }} .
-          docker push ${{ secrets.AZURE_REGISTRY }}.azurecr.io/${{ matrix.service }}:${{ github.sha }}
+          docker build -t registry.digitalocean.com/co-scraper-registry/${{ matrix.service }}:${{ github.sha }} .
+          docker push registry.digitalocean.com/co-scraper-registry/${{ matrix.service }}:${{ github.sha }}
 
   deploy_to_kubernetes:
     needs: build_and_push_docker_images
@@ -58,24 +59,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Azure CLI Login
-        run: az login --service-principal --username ${{ secrets.AZURE_CLIENT_ID }} --password ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-      - name: Get AKS credentials
-        run: az aks get-credentials --resource-group co-scraper --name co-scraper
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v1
-        with:
-          version: 'latest'
       - name: Set Image Tags
         id: vars
         run: echo "TAG=${GITHUB_SHA}" >> $GITHUB_ENV
       - name: Update Kubernetes Manifests
         run: |
           TAG=${{ env.TAG }}
-          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-service:.*|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-service:$TAG|" k8s-configs/deployments/customer-deployment.yaml
-          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/product-service:.*|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/product-service:$TAG|" k8s-configs/deployments/product-deployment.yaml
-          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-product-service:.*|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/customer-product-service:$TAG|" k8s-configs/deployments/customer-product-deployment.yaml
-          sed -i "s|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/store-service:.*|image: ${{ secrets.AZURE_REGISTRY }}.azurecr.io/store-service:$TAG|" k8s-configs/deployments/store-deployment.yaml
+          sed -i "s|image: registry.digitalocean.com/co-scraper-registry/customer-service:.*|image: registry.digitalocean.com/co-scraper-registry/customer-service:$TAG|" k8s-configs/deployments/customer-deployment.yaml
+          sed -i "s|image: registry.digitalocean.com/co-scraper-registry/product-service:.*|image: registry.digitalocean.com/co-scraper-registry/product-service:$TAG|" k8s-configs/deployments/product-deployment.yaml
+          sed -i "s|image: registry.digitalocean.com/co-scraper-registry/customer-product-service:.*|image: registry.digitalocean.com/co-scraper-registry/customer-product-service:$TAG|" k8s-configs/deployments/customer-product-deployment.yaml
+          sed -i "s|image: registry.digitalocean.com/co-scraper-registry/store-service:.*|image: registry.digitalocean.com/co-scraper-registry/store-service:$TAG|" k8s-configs/deployments/store-deployment.yaml
       - name: Deploy to Kubernetes
         run: |
           for file in k8s-configs/deployments/*.yaml; do
