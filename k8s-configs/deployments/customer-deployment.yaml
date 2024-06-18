@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: customer-service
-          image: acrcoscraper.azurecr.io/customer-service:dda24f097f0dcf05b09ee2bcb18eb494a3d877c7
+          image: registry.digitalocean.com/co-scraper-registry/customer-service:dda24f097f0dcf05b09ee2bcb18eb494a3d877c7
           ports:
             - containerPort: 8081
           resources:
@@ -58,5 +58,4 @@ spec:
                 secretKeyRef:
                   name: customer-secret
                   key: jwt-secret
-      imagePullSecrets:
-        - name: acr-secret
+

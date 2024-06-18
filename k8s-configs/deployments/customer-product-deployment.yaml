@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: customer-product-service
-          image: acrcoscraper.azurecr.io/customer-product-service:dda24f097f0dcf05b09ee2bcb18eb494a3d877c7
+          image: registry.digitalocean.com/co-scraper-registry/customer-product-service:dda24f097f0dcf05b09ee2bcb18eb494a3d877c7
           ports:
             - containerPort: 8082
           resources:
@@ -53,5 +53,3 @@ spec:
                 secretKeyRef:
                   name: auth0-secrets
                   key: auth0-clientSecret
-      imagePullSecrets:
-        - name: acr-secret
