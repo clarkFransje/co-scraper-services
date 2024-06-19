@@ -53,8 +53,25 @@ jobs:
           docker build -t registry.digitalocean.com/co-scraper-registry/${{ matrix.service }}:${{ github.sha }} .
           docker push registry.digitalocean.com/co-scraper-registry/${{ matrix.service }}:${{ github.sha }}
 
-  deploy_to_kubernetes:
+  zap_scan:
     needs: build_and_push_docker_images
+    name: ZAP Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Pull ZAP Docker Image
+        run: docker pull owasp/zap2docker-stable
+      - name: Run ZAP Baseline Scan
+        run: |
+          docker run -v $(pwd):/zap/wrk/:rw --network="host" owasp/zap2docker-stable zap-baseline.py -t https://co-scraper.app -r zap_report.html
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: zap-report
+          path: zap_report.html
+
+  deploy_to_kubernetes:
+    needs: [build_and_push_docker_images, zap_scan]
     name: Deploy to Kubernetes
     runs-on: ubuntu-latest
     steps:
@@ -94,6 +111,4 @@ jobs:
           for file in k8s-configs/network-policies/*.yaml; do
             kubectl apply -f "$file"
           done
-          kubectl apply -f k8s-configs/hpa-services.yaml
-          done
-          kubectl apply -f k8s-configs/standard-storageclass.yaml
+          kubectl apply -f k8s-configs/hpa-services.yaml && kubectl apply -f k8s-configs/standard-storageclass.yaml
