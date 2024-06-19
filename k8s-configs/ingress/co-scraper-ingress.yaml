@@ -3,10 +3,29 @@ kind: Ingress
 metadata:
   name: co-scraper
   namespace: co-scraper
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - co-scraper.app
+        - api.co-scraper.app
+      secretName: co-scraper-tls
   rules:
-    - http:
+    - host: "co-scraper.app"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web-service
+                port:
+                  number: 80
+    - host: "api.co-scraper.app"
+      http:
         paths:
           - path: /product
             pathType: Prefix
