@@ -28,8 +28,25 @@ jobs:
           cd ${{ matrix.service }}
           mvn clean install -DskipTests
 
-  build_and_push_docker_images:
+  zap_scan:
     needs: build_and_test
+    name: ZAP Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Pull ZAP Docker Image
+        run: docker pull zaproxy/zap-stable
+      - name: Run ZAP Baseline Scan
+        run: |
+          docker run -v $(pwd):/zap/wrk/:rw --user $(id -u):$(id -g) --network="host" zaproxy/zap-stable zap-baseline.py -t https://co-scraper.app -r zap_report.html
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v2
+        with:
+          path: zap_report.html
+          name: zap-report
+
+  build_and_push_docker_images:
+    needs: zap_scan
     name: Build and Push Docker Images
     runs-on: ubuntu-latest
     strategy:
@@ -53,25 +70,8 @@ jobs:
           docker build -t registry.digitalocean.com/co-scraper-registry/${{ matrix.service }}:${{ github.sha }} .
           docker push registry.digitalocean.com/co-scraper-registry/${{ matrix.service }}:${{ github.sha }}
 
-  zap_scan:
-    needs: build_and_push_docker_images
-    name: ZAP Scan
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Pull ZAP Docker Image
-        run: docker pull zaproxy/zap-stable
-      - name: Run ZAP Baseline Scan
-        run: |
-          docker run -v $(pwd):/zap/wrk/:rw --network="host" zaproxy/zap-stable zap-baseline.py -t https://co-scraper.app -r zap_report.html
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v2
-        with:
-          name: zap-report
-          path: zap_report.html
-
   deploy_to_kubernetes:
-    needs: [build_and_push_docker_images, zap_scan]
+    needs: build_and_push_docker_images
     name: Deploy to Kubernetes
     runs-on: ubuntu-latest
     steps:
