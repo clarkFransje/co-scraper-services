@@ -95,3 +95,5 @@ jobs:
             kubectl apply -f "$file"
           done
           kubectl apply -f k8s-configs/hpa-services.yaml
+          done
+          kubectl apply -f k8s-configs/standard-storageclass.yaml
