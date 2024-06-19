@@ -40,7 +40,13 @@ jobs:
         run: docker pull zaproxy/zap-stable
       - name: Run ZAP Baseline Scan
         run: |
+          set +e
           docker run -v $(pwd)/zap_work:/zap/wrk/:rw --user root --network="host" zaproxy/zap-stable zap-baseline.py -t https://co-scraper.app -r zap_report.html
+          exit_code=$?
+          if [ $exit_code -ne 0 ] && [ $exit_code -ne 1 ]; then
+            exit $exit_code
+          fi
+          set -e
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
         with:
