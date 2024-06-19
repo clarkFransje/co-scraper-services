@@ -34,15 +34,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Set up ZAP working directory
+        run: mkdir -p zap_work && chmod 777 zap_work
       - name: Pull ZAP Docker Image
         run: docker pull zaproxy/zap-stable
       - name: Run ZAP Baseline Scan
         run: |
-          docker run -v $(pwd):/zap/wrk/:rw --user $(id -u):$(id -g) --network="host" zaproxy/zap-stable zap-baseline.py -t https://co-scraper.app -r zap_report.html
+          docker run -v $(pwd)/zap_work:/zap/wrk/:rw --user root --network="host" zaproxy/zap-stable zap-baseline.py -t https://co-scraper.app -r zap_report.html
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
         with:
-          path: zap_report.html
+          path: zap_work/zap_report.html
           name: zap-report
 
   build_and_push_docker_images:
