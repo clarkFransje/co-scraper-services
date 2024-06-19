@@ -60,10 +60,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Pull ZAP Docker Image
-        run: docker pull owasp/zap2docker-stable
+        run: docker pull zaproxy/zap-stable
       - name: Run ZAP Baseline Scan
         run: |
-          docker run -v $(pwd):/zap/wrk/:rw --network="host" owasp/zap2docker-stable zap-baseline.py -t https://co-scraper.app -r zap_report.html
+          docker run -v $(pwd):/zap/wrk/:rw --network="host" zaproxy/zap-stable zap-baseline.py -t https://co-scraper.app -r zap_report.html
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
         with:
@@ -111,4 +111,5 @@ jobs:
           for file in k8s-configs/network-policies/*.yaml; do
             kubectl apply -f "$file"
           done
-          kubectl apply -f k8s-configs/hpa-services.yaml && kubectl apply -f k8s-configs/standard-storageclass.yaml
+          kubectl apply -f k8s-configs/hpa-services.yaml
+          kubectl apply -f k8s-configs/standard-storageclass.yaml
